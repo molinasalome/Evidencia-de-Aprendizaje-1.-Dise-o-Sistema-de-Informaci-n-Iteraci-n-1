@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Consulta de novedades - Autos Colombia</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+<div class="layout">
+
+    <div th:replace="~{fragmentos :: menu('novedades')}"></div>
+
+    <main class="contenido">
+        <h1>Consulta de novedades</h1>
+        <p class="descripcion">Revisa las novedades registradas sobre los vehículos</p>
+
+        <form th:action="@{/admin/novedades}" method="get" class="filtros-historial">
+            <div>
+                <label for="placa">Placa</label>
+                <input type="text" id="placa" name="placa" class="campo-form" placeholder="ABC123"
+                       maxlength="6" autocomplete="off" style="text-transform: uppercase"
+                       th:value="${placa}">
+            </div>
+            <div>
+                <label for="tipo">Tipo de novedad</label>
+                <select id="tipo" name="tipo" class="campo-form">
+                    <option value="" th:selected="${tipoSel == ''}">Todos</option>
+                    <option th:each="t : ${tipos}" th:value="${t.name()}" th:text="${t.etiqueta}"
+                            th:selected="${t.name() == tipoSel}"></option>
+                </select>
+            </div>
+            <div>
+                <label for="desde">Desde</label>
+                <input type="date" id="desde" name="desde" class="campo-form" th:value="${desde}">
+            </div>
+            <div>
+                <label for="hasta">Hasta</label>
+                <input type="date" id="hasta" name="hasta" class="campo-form"
+                       th:value="${hasta}" th:attr="min=${desde}">
+            </div>
+            <button type="submit" class="boton-buscar">Buscar</button>
+            <a class="boton-limpiar" th:href="@{/admin/novedades}">Limpiar</a>
+        </form>
+
+        <div th:if="${error}" class="mensaje error" th:text="${error}"></div>
+
+        <section class="tabla-panel">
+            <p th:if="${#lists.isEmpty(filas) and error == null}" style="padding: 16px 10px;">
+                No hay novedades para los filtros aplicados.
+            </p>
+
+            <table class="tabla" th:unless="${#lists.isEmpty(filas)}">
+                <thead>
+                    <tr>
+                        <th>Fecha y hora</th>
+                        <th>Placa</th>
+                        <th>Tipo</th>
+                        <th>Descripción</th>
+                        <th>Registrada por</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="f : ${filas}">
+                        <td th:text="${f.fechaHora()}"></td>
+                        <td th:text="${f.placa()}"></td>
+                        <td><span class="etiqueta-novedad" th:text="${f.tipo()}"></span></td>
+                        <td th:text="${f.descripcion()}"></td>
+                        <td th:text="${f.registradaPor()}"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="paginacion" th:if="${totalPaginas > 1}">
+                <span th:text="'Total: ' + ${total} + ' novedades'"></span>
+                <nav>
+                    <a th:if="${paginaActual > 1}"
+                       th:href="@{/admin/novedades(placa=${placa},tipo=${tipoSel},desde=${desde},hasta=${hasta},pagina=${paginaActual - 1})}">‹</a>
+                    <a th:each="p : ${#numbers.sequence(1, totalPaginas)}"
+                       th:href="@{/admin/novedades(placa=${placa},tipo=${tipoSel},desde=${desde},hasta=${hasta},pagina=${p})}"
+                       th:text="${p}"
+                       th:classappend="${p == paginaActual} ? 'actual'"></a>
+                    <a th:if="${paginaActual < totalPaginas}"
+                       th:href="@{/admin/novedades(placa=${placa},tipo=${tipoSel},desde=${desde},hasta=${hasta},pagina=${paginaActual + 1})}">›</a>
+                </nav>
+            </div>
+        </section>
+    </main>
+
+</div>
+
+<script>
+    const desde = document.getElementById('desde');
+    const hasta = document.getElementById('hasta');
+    desde.addEventListener('change', () => { hasta.min = desde.value; });
+</script>
+</body>
+</html>

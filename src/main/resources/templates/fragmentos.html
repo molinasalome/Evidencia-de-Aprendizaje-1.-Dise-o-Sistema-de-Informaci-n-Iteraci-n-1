@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<aside class="menu" th:fragment="menu(activo)">
+    <div class="menu-marca">Autos Colombia</div>
+
+    <nav class="menu-enlaces">
+        <a th:href="@{/panel}" th:classappend="${activo == 'panel'} ? 'activo'">🏠 Panel principal</a>
+        <a th:href="@{/entrada}" th:classappend="${activo == 'entrada'} ? 'activo'">🚗 Registrar entrada</a>
+        <a th:href="@{/salida}" th:classappend="${activo == 'salida'} ? 'activo'">🚪 Registrar salida</a>
+        <a th:href="@{/novedades/registrar}" th:classappend="${activo == 'novedad'} ? 'activo'">📝 Registrar novedad</a>
+        <a th:href="@{/consultas/dentro}" th:classappend="${activo == 'dentro'} ? 'activo'">🚘 Vehículos dentro</a>
+        <a th:href="@{/consultas/celdas}" th:classappend="${activo == 'celdas'} ? 'activo'">▦ Celdas</a>
+        <a th:if="${esAdmin}" th:href="@{/admin/historial}" th:classappend="${activo == 'historial'} ? 'activo'">🕘 Historial</a>
+        <a th:if="${esAdmin}" th:href="@{/admin/novedades}" th:classappend="${activo == 'novedades'} ? 'activo'">⚠️ Novedades</a>
+    </nav>
+
+    <div class="menu-pie">
+        <strong th:text="${rolEtiqueta}">Vigilante</strong>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit">Cerrar sesión</button>
+        </form>
+    </div>
+</aside>
+
+</body>
+</html>

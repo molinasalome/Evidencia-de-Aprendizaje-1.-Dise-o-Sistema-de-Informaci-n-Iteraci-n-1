@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Registrar salida - Autos Colombia</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+<div class="layout">
+
+    <div th:replace="~{fragmentos :: menu('salida')}"></div>
+
+    <main class="contenido">
+        <h1>Registrar salida</h1>
+        <p class="descripcion">Ingrese la placa del vehículo que sale del parqueadero</p>
+
+        <div th:if="${exito}" class="mensaje exito" th:text="${exito}"></div>
+        <div th:if="${error}" class="mensaje error" th:text="${error}"></div>
+
+        <section class="panel">
+            <h2>Placa del vehículo</h2>
+            <form th:action="@{/salida}" method="post">
+                <input type="text" class="campo" name="placa" placeholder="ABC123"
+                       maxlength="6" required autofocus autocomplete="off">
+                <p class="ayuda">El sistema verificará que el vehículo tenga un ingreso activo</p>
+                <button type="submit" class="boton">Registrar salida</button>
+            </form>
+        </section>
+    </main>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Celdas - Autos Colombia</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+<div class="layout">
+
+    <div th:replace="~{fragmentos :: menu('celdas')}"></div>
+
+    <main class="contenido">
+        <h1>Disponibilidad de celdas</h1>
+        <p class="descripcion">Estado actual de las celdas del parqueadero</p>
+
+        <section class="resumen-celdas">
+            <div class="resumen res-libres"><span>Celdas libres</span><strong th:text="${m.libres()}">0</strong></div>
+            <div class="resumen res-ocupadas"><span>Celdas ocupadas</span><strong th:text="${m.ocupadas()}">0</strong></div>
+            <div class="resumen res-mant"><span>En mantenimiento</span><strong th:text="${m.mantenimiento()}">0</strong></div>
+        </section>
+
+        <div class="leyenda">
+            <div><span class="muestra libre"></span> Libre</div>
+            <div><span class="muestra ocupada"></span> Ocupada</div>
+            <div><span class="muestra mantenimiento"></span> En mantenimiento</div>
+        </div>
+
+        <section class="grupo-celdas">
+            <h3 th:text="'Carros (' + ${m.carrosLibres()} + ' libres de ' + ${#lists.size(m.carros())} + ')'"></h3>
+            <div class="cuadricula">
+                <div class="celda" th:each="c : ${m.carros()}" th:classappend="${c.estadoClase()}">
+                    <span th:text="${c.codigo()}"></span>
+                    <div class="tip">
+                        <strong th:text="'Celda ' + ${c.codigo()}"></strong>
+                        <small th:text="${c.estadoTexto()}"></small>
+                        <small th:if="${c.placa() != null}" th:text="'Placa: ' + ${c.placa()}"></small>
+                        <small th:if="${c.usuario() != null}" th:text="'Usuario: ' + ${c.usuario()}"></small>
+                        <small th:if="${c.desde() != null}" th:text="'Desde: ' + ${c.desdeTexto()}"></small>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="grupo-celdas">
+            <h3 th:text="'Motos (' + ${m.motosLibres()} + ' libres de ' + ${#lists.size(m.motos())} + ')'"></h3>
+            <div class="cuadricula">
+                <div class="celda" th:each="c : ${m.motos()}" th:classappend="${c.estadoClase()}">
+                    <span th:text="${c.codigo()}"></span>
+                    <div class="tip">
+                        <strong th:text="'Celda ' + ${c.codigo()}"></strong>
+                        <small th:text="${c.estadoTexto()}"></small>
+                        <small th:if="${c.placa() != null}" th:text="'Placa: ' + ${c.placa()}"></small>
+                        <small th:if="${c.usuario() != null}" th:text="'Usuario: ' + ${c.usuario()}"></small>
+                        <small th:if="${c.desde() != null}" th:text="'Desde: ' + ${c.desdeTexto()}"></small>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+</div>
+</body>
+</html>

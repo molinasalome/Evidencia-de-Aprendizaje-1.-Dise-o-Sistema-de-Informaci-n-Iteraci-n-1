@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Registrar entrada - Autos Colombia</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+<div class="layout">
+
+    <div th:replace="~{fragmentos :: menu('entrada')}"></div>
+
+    <main class="contenido">
+        <h1>Registrar entrada</h1>
+        <p class="descripcion">Ingrese la placa del vehículo que llega al parqueadero</p>
+
+        <div th:if="${exito}" class="mensaje exito" th:text="${exito}"></div>
+        <div th:if="${alerta}" class="mensaje alerta" th:text="${alerta}"></div>
+        <div th:if="${error}" class="mensaje error" th:text="${error}"></div>
+
+        <section class="panel">
+            <h2>Placa del vehículo</h2>
+            <form th:action="@{/entrada}" method="post">
+                <input type="text" class="campo" name="placa" placeholder="ABC123"
+                       maxlength="6" required autofocus autocomplete="off">
+                <p class="ayuda">Carros: 3 letras y 3 números (ABC123)</p>
+                <p class="ayuda">Motos: 3 letras, 2 números y 1 letra (ABC12D)</p>
+                <button type="submit" class="boton">Registrar entrada</button>
+            </form>
+        </section>
+    </main>
+
+</div>
+</body>
+</html>

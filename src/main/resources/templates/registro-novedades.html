@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Registrar novedad - Autos Colombia</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+<div class="layout">
+
+    <div th:replace="~{fragmentos :: menu('novedad')}"></div>
+
+    <main class="contenido">
+        <h1>Registrar novedad</h1>
+        <p class="descripcion">Deja constancia de lo ocurrido con un vehículo que está en el parqueadero</p>
+
+        <div th:if="${exito}" class="mensaje exito" th:text="${exito}"></div>
+        <div th:if="${error}" class="mensaje error" th:text="${error}"></div>
+
+        <section class="panel panel-ancho">
+            <form th:action="@{/novedades/registrar}" method="post">
+
+                <div class="fila-form">
+                    <label for="placa">Placa del vehículo</label>
+                    <div>
+                        <input type="text" id="placa" name="placa" class="campo-form"
+                               style="text-transform: uppercase" placeholder="ABC123"
+                               maxlength="6" required autofocus autocomplete="off"
+                               th:value="${placaEscrita}">
+                        <p class="ayuda">Solo vehículos con ingreso activo</p>
+                    </div>
+                </div>
+
+                <div class="fila-form">
+                    <label for="tipo">Tipo de novedad</label>
+                    <select id="tipo" name="tipo" class="campo-form" required>
+                        <option value="" disabled th:selected="${tipoEscrito == null}">Selecciona un tipo</option>
+                        <option th:each="t : ${tipos}" th:value="${t.key}" th:text="${t.value}"
+                                th:selected="${t.key == tipoEscrito}"></option>
+                    </select>
+                </div>
+
+                <div class="fila-form">
+                    <label for="descripcion">Descripción</label>
+                    <textarea id="descripcion" name="descripcion" class="campo-form" rows="4"
+                              maxlength="500" required
+                              placeholder="Describe lo ocurrido con el mayor detalle posible"
+                              th:text="${descripcionEscrita}"></textarea>
+                </div>
+
+                <div class="fila-form">
+                    <label for="fechaHora">Fecha y hora</label>
+                    <input type="text" id="fechaHora" class="campo-form" readonly
+                           th:value="${fechaHora} + ' (automática)'">
+                </div>
+
+                <div class="fila-form">
+                    <label for="registradaPor">Registrada por</label>
+                    <input type="text" id="registradaPor" class="campo-form" readonly
+                           th:value="${registradaPor}">
+                </div>
+
+                <div class="acciones">
+                    <button type="submit" class="boton">Guardar novedad</button>
+                    <a class="boton-sec" th:href="@{/panel}">Cancelar</a>
+                </div>
+            </form>
+        </section>
+    </main>
+
+</div>
+</body>
+</html>

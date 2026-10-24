@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Vehículos dentro - Autos Colombia</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+<div class="layout">
+
+    <div th:replace="~{fragmentos :: menu('dentro')}"></div>
+
+    <main class="contenido">
+        <h1>Vehículos dentro</h1>
+        <p class="descripcion">Vehículos que se encuentran actualmente en el parqueadero</p>
+
+        <form th:action="@{/consultas/dentro}" method="get" class="barra-filtros">
+            <input type="text" name="placa" class="campo-form buscador" placeholder="Buscar por placa"
+                   maxlength="6" autocomplete="off" style="text-transform: uppercase"
+                   th:value="${placaFiltro}">
+            <select name="tipo" class="campo-form selector-tipo" onchange="this.form.submit()">
+                <option value="" th:selected="${tipoSel == ''}">Tipo: Todos</option>
+                <option value="CARRO" th:selected="${tipoSel == 'CARRO'}">Tipo: Carro</option>
+                <option value="MOTO" th:selected="${tipoSel == 'MOTO'}">Tipo: Moto</option>
+            </select>
+                        <button type="submit" class="boton-buscar">Buscar</button>
+            <span class="total-dentro"
+                  th:text="${totalDentro} + (${totalDentro == 1} ? ' vehículo dentro' : ' vehículos dentro')"></span>
+        </form>
+
+        <section class="tabla-panel">
+            <p th:if="${#lists.isEmpty(visibles)}" style="padding: 16px 10px;">
+                No hay vehículos dentro para los filtros aplicados.
+            </p>
+
+            <table class="tabla" th:unless="${#lists.isEmpty(visibles)}">
+                <thead>
+                    <tr>
+                        <th>Placa</th>
+                        <th>Tipo</th>
+                        <th>Usuario</th>
+                        <th>Celda</th>
+                        <th>Hora de entrada</th>
+                        <th>Tiempo dentro</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="v : ${visibles}">
+                        <td th:text="${v.placa()}"></td>
+                        <td>
+                            <span class="etiqueta-tipo"
+                                  th:classappend="${v.tipoTexto() == 'Carro'} ? 'carro' : 'moto'"
+                                  th:text="${v.tipoTexto()}"></span>
+                        </td>
+                        <td th:text="${v.usuario()}"></td>
+                        <td th:text="${v.celda()}"></td>
+                        <td th:text="${v.horaEntradaTexto()}"></td>
+                        <td th:text="${v.tiempoDentroTexto()}"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="paginacion">
+                <span th:text="'Mostrando ' + ${#lists.size(visibles)} + ' de ' + ${totalFiltrados}"></span>
+                <nav>
+                    <a th:if="${paginaActual > 1}"
+                       th:href="@{/consultas/dentro(placa=${placaFiltro},tipo=${tipoSel},pagina=${paginaActual - 1})}">‹</a>
+                    <a th:each="p : ${#numbers.sequence(1, totalPaginas)}"
+                       th:href="@{/consultas/dentro(placa=${placaFiltro},tipo=${tipoSel},pagina=${p})}"
+                       th:text="${p}"
+                       th:classappend="${p == paginaActual} ? 'actual'"></a>
+                    <a th:if="${paginaActual < totalPaginas}"
+                       th:href="@{/consultas/dentro(placa=${placaFiltro},tipo=${tipoSel},pagina=${paginaActual + 1})}">›</a>
+                </nav>
+            </div>
+        </section>
+    </main>
+
+</div>
+</body>
+</html>

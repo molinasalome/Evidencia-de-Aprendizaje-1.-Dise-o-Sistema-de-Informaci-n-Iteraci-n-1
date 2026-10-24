@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Panel principal - Autos Colombia</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+<div class="layout">
+
+    <div th:replace="~{fragmentos :: menu('panel')}"></div>
+
+    <main class="contenido">
+        <h1>Panel principal</h1>
+        <p class="descripcion">Resumen de la ocupación del parqueadero</p>
+
+        <section class="tarjetas">
+            <div class="tarjeta-dato"><span>Celdas totales</span><strong th:text="${d.totalCeldas()}">0</strong></div>
+            <div class="tarjeta-dato"><span>Celdas ocupadas</span><strong th:text="${d.ocupadas()}">0</strong></div>
+            <div class="tarjeta-dato"><span>Celdas libres</span><strong th:text="${d.libres()}">0</strong></div>
+            <div class="tarjeta-dato"><span>Vehículos dentro</span><strong th:text="${dentro}">0</strong></div>
+        </section>
+
+        <section class="tarjetas">
+            <div class="tarjeta-tipo">
+                <h2>Carros</h2>
+                <p th:text="'Libres: ' + ${d.carrosLibres()} + ' de ' + ${d.carrosTotal()}">Libres: 0 de 0</p>
+            </div>
+            <div class="tarjeta-tipo">
+                <h2>Motos</h2>
+                <p th:text="'Libres: ' + ${d.motosLibres()} + ' de ' + ${d.motosTotal()}">Libres: 0 de 0</p>
+            </div>
+        </section>
+
+        <h3>Accesos rápidos</h3>
+        <div class="accesos">
+            <a class="btn-acceso" th:href="@{/entrada}">Registrar entrada</a>
+            <a class="btn-acceso secundario" th:href="@{/salida}">Registrar salida</a>
+        </div>
+    </main>
+
+</div>
+</body>
+</html>
