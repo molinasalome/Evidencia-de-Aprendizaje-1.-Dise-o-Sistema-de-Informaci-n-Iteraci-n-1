@@ -26,4 +26,7 @@ public interface NovedadRepository extends JpaRepository<Novedad, Integer> {
                                    @Param("tipo") TipoNovedad tipo,
                                    @Param("desde") LocalDateTime desde,
                                    @Param("hasta") LocalDateTime hasta);
+    
+    // ¿El vehículo tiene novedades? (si sí, no se puede cambiar su placa)
+    boolean existsByVehiculoPlaca(String placa);
 }

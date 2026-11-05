@@ -8,6 +8,7 @@ import com.autoscolombia.parqueadero.repositorio.MensualidadRepository;
 import com.autoscolombia.parqueadero.repositorio.VehiculoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.autoscolombia.parqueadero.excepcion.ClienteInactivoException;
 
 import java.time.LocalDate;
 
@@ -43,9 +44,13 @@ public class UsuarioService {
             .isEmpty();
     }
 
-    // Autoriza o rechaza el ingreso: lanza excepción si algo falla
+        // Autoriza o rechaza el ingreso: lanza excepción si algo falla
     public Cliente validarIngreso(String placa) {
         Cliente cliente = buscarPorPlaca(placa);
+        if (!cliente.isActivo()) {
+            throw new ClienteInactivoException(
+                "El cliente está desactivado y no puede ingresar.");
+        }
         if (!tieneMensualidadVigente(placa)) {
             throw new MensualidadVencidaException(
                 "La mensualidad del usuario está vencida.");

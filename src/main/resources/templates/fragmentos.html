@@ -14,6 +14,9 @@
         <a th:href="@{/consultas/celdas}" th:classappend="${activo == 'celdas'} ? 'activo'">▦ Celdas</a>
         <a th:if="${esAdmin}" th:href="@{/admin/historial}" th:classappend="${activo == 'historial'} ? 'activo'">🕘 Historial</a>
         <a th:if="${esAdmin}" th:href="@{/admin/novedades}" th:classappend="${activo == 'novedades'} ? 'activo'">⚠️ Novedades</a>
+        <a th:if="${esAdmin}" th:href="@{/admin/clientes}" th:classappend="${activo == 'clientes'} ? 'activo'">👥 Clientes</a>
+        <a th:if="${esAdmin}" th:href="@{/admin/empleados}" th:classappend="${activo == 'empleados'} ? 'activo'">🧑‍💼 Empleados</a>
+        <a th:if="${esAdmin}" th:href="@{/admin/celdas}" th:classappend="${activo == 'gestion-celdas'} ? 'activo'">⚙️ Gestión de celdas</a>
     </nav>
 
     <div class="menu-pie">

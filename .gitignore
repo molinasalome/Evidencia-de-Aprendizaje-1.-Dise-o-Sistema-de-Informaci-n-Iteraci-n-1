@@ -33,3 +33,6 @@ build/
 .vscode/
 
 application-local.properties
+
+### Archivos compilados de VS Code ###
+bin/

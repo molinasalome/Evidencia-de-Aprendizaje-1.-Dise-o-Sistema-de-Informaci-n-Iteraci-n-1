@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Clientes - Autos Colombia</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+<div class="layout">
+
+    <div th:replace="~{fragmentos :: menu('clientes')}"></div>
+
+    <main class="contenido">
+        <h1>Clientes</h1>
+        <p class="descripcion">Administra los clientes, sus vehículos y sus mensualidades</p>
+
+        <div th:if="${exito}" class="mensaje exito" th:text="${exito}"></div>
+        <div th:if="${alerta}" class="mensaje alerta" th:text="${alerta}"></div>
+        <div th:if="${error}" class="mensaje error" th:text="${error}"></div>
+
+        <div class="barra-clientes">
+            <form th:action="@{/admin/clientes}" method="get">
+                <input type="text" name="q" class="campo-form"
+                       placeholder="Buscar por nombre, documento o placa"
+                       autocomplete="off" th:value="${q}">
+                <button type="submit" class="boton-buscar">Buscar</button>
+                <a class="boton-limpiar" th:href="@{/admin/clientes}">Limpiar</a>
+            </form>
+            <a class="boton-nuevo" th:href="@{/admin/clientes/nuevo}">+ Nuevo cliente</a>
+        </div>
+
+        <section class="tabla-panel">
+            <p th:if="${#lists.isEmpty(filas)}" style="padding: 16px 10px;">
+                No se encontraron clientes.
+            </p>
+
+            <table class="tabla" th:unless="${#lists.isEmpty(filas)}">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Documento</th>
+                        <th>Placas</th>
+                        <th>Mensualidad</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="f : ${filas}">
+                        <td th:text="${f.nombre()}"></td>
+                        <td th:text="${f.documento()}"></td>
+                        <td th:text="${f.placas()}"></td>
+                        <td>
+                            <span class="etiqueta-estado"
+                                  th:classappend="${f.estadoMensualidad() == 'VIGENTE'} ? 'vigente' : (${f.estadoMensualidad() == 'VENCIDA'} ? 'vencida' : 'sin-mensualidad')"
+                                  th:text="${f.estadoMensualidad() == 'VIGENTE'} ? 'Vigente' : (${f.estadoMensualidad() == 'VENCIDA'} ? 'Vencida' : 'Sin mensualidad')"></span>
+                        </td>
+                        <td>
+                            <span class="etiqueta-estado"
+                                  th:classappend="${f.activo()} ? 'activo' : 'inactivo'"
+                                  th:text="${f.activo()} ? 'Activo' : 'Inactivo'"></span>
+                        </td>
+                        <td>
+                            <div class="acciones-fila">
+                                <a th:href="@{/admin/clientes/{id}/editar(id=${f.id()})}">Editar</a>
+                                <a th:href="@{/admin/clientes/{id}/mensualidad(id=${f.id()})}">Mensualidad</a>
+                                <form th:action="@{/admin/clientes/{id}/estado(id=${f.id()})}" method="post"
+                                      class="form-estado"
+                                      th:attr="data-nombre=${f.nombre()},data-accion=${f.activo() ? 'desactivar' : 'activar'}">
+                                    <input type="hidden" name="activo" th:value="${!f.activo()}">
+                                    <button type="submit" class="enlace-boton"
+                                            th:classappend="${f.activo()} ? 'peligro'"
+                                            th:text="${f.activo()} ? 'Desactivar' : 'Activar'"></button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="paginacion" th:if="${total > 0}">
+                <span th:text="'Mostrando ' + ${#lists.size(filas)} + ' de ' + ${total}"></span>
+                <nav th:if="${totalPaginas > 1}">
+                    <a th:if="${paginaActual > 1}"
+                       th:href="@{/admin/clientes(q=${q},pagina=${paginaActual - 1})}">‹</a>
+                    <a th:each="p : ${#numbers.sequence(1, totalPaginas)}"
+                       th:href="@{/admin/clientes(q=${q},pagina=${p})}"
+                       th:text="${p}"
+                       th:classappend="${p == paginaActual} ? 'actual'"></a>
+                    <a th:if="${paginaActual < totalPaginas}"
+                       th:href="@{/admin/clientes(q=${q},pagina=${paginaActual + 1})}">›</a>
+                </nav>
+            </div>
+        </section>
+    </main>
+
+</div>
+
+<script>
+    // Pide confirmación antes de activar o desactivar un cliente
+    document.querySelectorAll('.form-estado').forEach(form => {
+        form.addEventListener('submit', evento => {
+            const nombre = form.dataset.nombre;
+            const mensaje = form.dataset.accion === 'desactivar'
+                ? '¿Desactivar a ' + nombre + '? No podrá ingresar nuevos vehículos. '
+                  + 'Si tiene un vehículo dentro, este podrá salir normalmente.'
+                : '¿Activar a ' + nombre + '?';
+            if (!confirm(mensaje)) {
+                evento.preventDefault();
+            }
+        });
+    });
+</script>
+</body>
+</html>

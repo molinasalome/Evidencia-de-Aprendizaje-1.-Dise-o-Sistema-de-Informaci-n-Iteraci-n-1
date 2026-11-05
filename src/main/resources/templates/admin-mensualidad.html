@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mensualidad - Autos Colombia</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+<div class="layout">
+
+    <div th:replace="~{fragmentos :: menu('clientes')}"></div>
+
+    <main class="contenido">
+        <a class="enlace-volver" th:href="@{/admin/clientes}">← Volver a clientes</a>
+        <h1>Mensualidad</h1>
+        <p class="descripcion">Registra o renueva la mensualidad del cliente</p>
+
+        <div th:if="${exito}" class="mensaje exito" th:text="${exito}"></div>
+        <div th:if="${error}" class="mensaje error" th:text="${error}"></div>
+
+        <!-- Datos del cliente (solo lectura) -->
+        <section class="tarjeta-form">
+            <h2>Cliente</h2>
+            <div class="datos-cliente">
+                <div><span>Nombre</span><strong th:text="${cliente.nombre}"></strong></div>
+                <div><span>Documento</span><strong th:text="${cliente.documento}"></strong></div>
+                <div><span>Placas</span><strong th:text="${placas}"></strong></div>
+                <span class="etiqueta-estado"
+                      th:classappend="${estado == 'VIGENTE'} ? 'vigente' : (${estado == 'VENCIDA'} ? 'vencida' : 'sin-mensualidad')"
+                      th:text="${estado == 'VIGENTE'} ? 'Vigente' : (${estado == 'VENCIDA'} ? 'Vencida' : 'Sin mensualidad')"></span>
+            </div>
+        </section>
+
+        <!-- Caso A: sin mensualidad -> registrar -->
+        <section class="tarjeta-form" th:if="${info.situacion() == 'SIN_MENSUALIDAD'}">
+            <h2>Registrar mensualidad</h2>
+            <form th:action="@{/admin/clientes/{id}/mensualidad/registrar(id=${cliente.idUsuario})}" method="post">
+                <div class="rejilla-form">
+                    <div>
+                        <label for="inicio">Fecha de inicio *</label>
+                        <input type="date" id="inicio" name="inicio" class="campo-form" required>
+                    </div>
+                    <div>
+                        <label for="fin">Fecha de fin *</label>
+                        <input type="date" id="fin" name="fin" class="campo-form" required>
+                    </div>
+                </div>
+                <div class="botones-form" style="margin-top: 18px;">
+                    <button type="submit" class="boton">Guardar mensualidad</button>
+                    <a class="boton-sec" th:href="@{/admin/clientes}">Cancelar</a>
+                </div>
+            </form>
+        </section>
+
+        <!-- Caso B: vencida o por vencer -> renovar -->
+        <section class="tarjeta-form" th:if="${info.situacion() == 'RENOVABLE'}">
+            <h2>Renovar mensualidad</h2>
+            <form th:action="@{/admin/clientes/{id}/mensualidad/renovar(id=${cliente.idUsuario})}" method="post">
+                <div class="rejilla-form">
+                    <div>
+                        <label for="inicio">Fecha de inicio</label>
+                        <input type="date" id="inicio" class="campo-form campo-bloqueado" disabled
+                               th:value="${info.inicioRenovacion()}">
+                        <p class="nota-form">Se calcula automáticamente</p>
+                    </div>
+                    <div>
+                        <label for="fin">Fecha de fin *</label>
+                        <input type="date" id="fin" name="fin" class="campo-form" required
+                               th:attr="min=${info.inicioRenovacion()}">
+                    </div>
+                </div>
+                <div class="botones-form" style="margin-top: 18px;">
+                    <button type="submit" class="boton">Renovar mensualidad</button>
+                    <a class="boton-sec" th:href="@{/admin/clientes}">Cancelar</a>
+                </div>
+            </form>
+        </section>
+
+        <!-- Caso C: vigente con más de 5 días -> todavía no se puede renovar -->
+        <div class="mensaje alerta" style="max-width: 820px;" th:if="${info.situacion() == 'VIGENTE'}">
+            La mensualidad vigente vence el
+            <strong th:text="${#temporals.format(info.vigenteHasta(), 'dd/MM/yyyy')}"></strong>.
+            Podrás renovarla desde el
+            <strong th:text="${#temporals.format(info.renovableDesde(), 'dd/MM/yyyy')}"></strong>.
+        </div>
+
+        <!-- Historial -->
+        <section class="tarjeta-form">
+            <h2>Historial de mensualidades</h2>
+            <p th:if="${#lists.isEmpty(historial)}">Este cliente todavía no tiene mensualidades.</p>
+            <table class="tabla" th:unless="${#lists.isEmpty(historial)}">
+                <thead>
+                    <tr><th>Inicio</th><th>Fin</th><th>Estado</th></tr>
+                </thead>
+                <tbody>
+                    <tr th:each="m : ${historial}">
+                        <td th:text="${m.inicio()}"></td>
+                        <td th:text="${m.fin()}"></td>
+                        <td>
+                            <span class="etiqueta-estado"
+                                  th:classappend="${m.estado() == 'Vigente'} ? 'vigente' : 'sin-mensualidad'"
+                                  th:text="${m.estado()}"></span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+</div>
+
+<script>
+    // La fecha de fin no puede ser anterior a la de inicio (solo cuando se registra)
+    const inicio = document.getElementById('inicio');
+    const fin = document.getElementById('fin');
+    if (inicio && fin && !inicio.disabled) {
+        inicio.addEventListener('change', () => { fin.min = inicio.value; });
+    }
+</script>
+</body>
+</html>

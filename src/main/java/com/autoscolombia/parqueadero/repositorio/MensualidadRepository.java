@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface MensualidadRepository extends JpaRepository<Mensualidad, Integer> {
 
@@ -18,4 +19,10 @@ public interface MensualidadRepository extends JpaRepository<Mensualidad, Intege
            """)
     List<Mensualidad> buscarVigentes(@Param("idCliente") Integer idCliente,
                                      @Param("fecha") LocalDate fecha);
+
+    // Historial de mensualidades del cliente, la más reciente primero
+    List<Mensualidad> findByClienteIdUsuarioOrderByFechaInicioDesc(Integer idCliente);
+
+    // La última mensualidad registrada (la de fecha fin más lejana)
+    Optional<Mensualidad> findFirstByClienteIdUsuarioOrderByFechaFinDesc(Integer idCliente);
 }

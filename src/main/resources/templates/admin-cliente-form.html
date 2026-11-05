@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cliente - Autos Colombia</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+<div class="layout">
+
+    <div th:replace="~{fragmentos :: menu('clientes')}"></div>
+
+    <main class="contenido">
+        <h1 th:text="${titulo}">Registrar cliente</h1>
+        <p class="descripcion">Los campos con * son obligatorios</p>
+
+        <div th:if="${error}" class="mensaje error" th:text="${error}"></div>
+
+        <form th:action="@{${accion}}" method="post">
+
+            <section class="tarjeta-form">
+                <h2>Datos del cliente</h2>
+                <div class="rejilla-form">
+                    <div>
+                        <label for="nombre">Nombre completo *</label>
+                        <input type="text" id="nombre" name="nombre" class="campo-form"
+                               maxlength="100" required th:value="${form.nombre()}">
+                    </div>
+                    <div>
+                        <label for="documento">Documento *</label>
+                        <input type="text" id="documento" name="documento" class="campo-form"
+                               maxlength="20" required th:value="${form.documento()}">
+                    </div>
+                    <div>
+                        <label for="telefono">Teléfono</label>
+                        <input type="text" id="telefono" name="telefono" class="campo-form"
+                               maxlength="20" th:value="${form.telefono()}">
+                    </div>
+                    <div>
+                        <label for="correo">Correo</label>
+                        <input type="email" id="correo" name="correo" class="campo-form"
+                               maxlength="100" th:value="${form.correo()}">
+                    </div>
+                </div>
+            </section>
+
+            <section class="tarjeta-form">
+                <h2>Vehículos del cliente</h2>
+                <p class="nota-form">
+                    Carros: 3 letras y 3 números (ABC123). Motos: 3 letras, 2 números y 1 letra (ABC12D).
+                </p>
+
+                <div id="lista-vehiculos">
+                    <div class="fila-vehiculo" th:each="v : ${form.vehiculos()}">
+                        <input type="hidden" name="placaOriginal" th:value="${v.placaOriginal()}">
+                        <div>
+                            <label>Placa *</label>
+                            <input type="text" name="placa" class="campo-form" maxlength="6"
+                                   autocomplete="off" style="text-transform: uppercase"
+                                   th:value="${v.placa()}"
+                                   th:readonly="${v.bloqueada()}"
+                                   th:classappend="${v.bloqueada()} ? 'campo-bloqueado'"
+                                   th:title="${v.bloqueada()} ? 'La placa no se puede cambiar porque el vehículo tiene movimientos registrados'">
+                        </div>
+                        <div>
+                            <label>Tipo *</label>
+                            <select name="tipo" class="campo-form">
+                                <option value="" th:selected="${v.tipo() == ''}">Tipo</option>
+                                <option value="CARRO" th:selected="${v.tipo() == 'CARRO'}">Carro</option>
+                                <option value="MOTO" th:selected="${v.tipo() == 'MOTO'}">Moto</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Marca</label>
+                            <input type="text" name="marca" class="campo-form" maxlength="50"
+                                   th:value="${v.marca()}">
+                        </div>
+                        <div>
+                            <label>Color</label>
+                            <input type="text" name="color" class="campo-form" maxlength="30"
+                                   th:value="${v.color()}">
+                        </div>
+                        <!-- Un vehículo ya guardado no se quita desde aquí -->
+                        <button type="button" class="quitar-vehiculo" title="Quitar"
+                                th:if="${v.placaOriginal() == ''}">×</button>
+                        <span th:unless="${v.placaOriginal() == ''}"></span>
+                    </div>
+                </div>
+
+                <button type="button" class="agregar-vehiculo" id="agregar">+ Agregar otro vehículo</button>
+            </section>
+
+            <div class="botones-form">
+                <button type="submit" class="boton" th:text="${textoBoton}">Guardar cliente</button>
+                <a class="boton-sec" th:href="@{/admin/clientes}">Cancelar</a>
+            </div>
+        </form>
+    </main>
+
+</div>
+
+<!-- Molde de una fila de vehículo nueva -->
+<template id="molde-vehiculo">
+    <div class="fila-vehiculo">
+        <input type="hidden" name="placaOriginal" value="">
+        <div>
+            <label>Placa *</label>
+            <input type="text" name="placa" class="campo-form" maxlength="6"
+                   autocomplete="off" style="text-transform: uppercase">
+        </div>
+        <div>
+            <label>Tipo *</label>
+            <select name="tipo" class="campo-form">
+                <option value="">Tipo</option>
+                <option value="CARRO">Carro</option>
+                <option value="MOTO">Moto</option>
+            </select>
+        </div>
+        <div>
+            <label>Marca</label>
+            <input type="text" name="marca" class="campo-form" maxlength="50">
+        </div>
+        <div>
+            <label>Color</label>
+            <input type="text" name="color" class="campo-form" maxlength="30">
+        </div>
+        <button type="button" class="quitar-vehiculo" title="Quitar">×</button>
+    </div>
+</template>
+
+<script>
+    const lista = document.getElementById('lista-vehiculos');
+    const molde = document.getElementById('molde-vehiculo');
+
+    document.getElementById('agregar').addEventListener('click', () => {
+        lista.appendChild(molde.content.cloneNode(true));
+    });
+
+    // Quitar una fila nueva
+    lista.addEventListener('click', evento => {
+        if (evento.target.classList.contains('quitar-vehiculo')) {
+            evento.target.closest('.fila-vehiculo').remove();
+        }
+    });
+</script>
+</body>
+</html>

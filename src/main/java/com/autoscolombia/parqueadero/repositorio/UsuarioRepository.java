@@ -12,4 +12,10 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
     @Query("select e from Empleado e where e.nombreUsuario = :nombreUsuario")
     Optional<Empleado> buscarEmpleado(@Param("nombreUsuario") String nombreUsuario);
+
+    // Documento repetido al registrar
+    boolean existsByDocumento(String documento);
+
+    // Documento repetido al editar (se ignora el propio usuario)
+    boolean existsByDocumentoAndIdUsuarioNot(String documento, Integer idUsuario);
 }

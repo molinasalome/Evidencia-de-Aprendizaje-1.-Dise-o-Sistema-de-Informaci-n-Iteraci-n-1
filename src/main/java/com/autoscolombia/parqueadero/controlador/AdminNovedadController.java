@@ -67,7 +67,7 @@ public class AdminNovedadController {
                 .toList();
         }
 
-        // Paginación de 6 en 6
+       
         int totalPaginas = Math.max(1, (int) Math.ceil(todas.size() / (double) POR_PAGINA));
         int actual = Math.min(Math.max(pagina, 1), totalPaginas);
         int inicio = (actual - 1) * POR_PAGINA;

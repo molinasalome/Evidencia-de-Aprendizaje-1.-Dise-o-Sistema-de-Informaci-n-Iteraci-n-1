@@ -33,4 +33,11 @@ public interface MovimientoRepository extends JpaRepository<Movimiento, Integer>
                                       @Param("usuario") String usuario,
                                       @Param("desde") LocalDateTime desde,
                                       @Param("hasta") LocalDateTime hasta);
+                                      
+    
+    // ¿El vehículo ya tiene movimientos? (si sí, no se puede cambiar su placa)
+    boolean existsByVehiculoPlaca(String placa);
+
+    // ¿El cliente tiene algún vehículo dentro ahora mismo? (aviso al desactivar)
+    boolean existsByVehiculoClienteIdUsuarioAndFechaHoraSalidaIsNull(Integer idCliente);
 }

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Empleados - Autos Colombia</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+<div class="layout">
+
+    <div th:replace="~{fragmentos :: menu('empleados')}"></div>
+
+    <main class="contenido">
+        <h1>Empleados</h1>
+        <p class="descripcion">Administra las personas que usan el sistema</p>
+
+        <div th:if="${exito}" class="mensaje exito" th:text="${exito}"></div>
+        <div th:if="${error}" class="mensaje error" th:text="${error}"></div>
+
+        <!-- Listado -->
+        <section class="tarjeta-form">
+            <div class="encabezado-tarjeta">
+                <h2>Listado de empleados</h2>
+                <button type="button" class="boton-nuevo" id="abrir-form">+ Nuevo empleado</button>
+            </div>
+
+            <p th:if="${#lists.isEmpty(empleados)}">Todavía no hay empleados registrados.</p>
+            <table class="tabla" th:unless="${#lists.isEmpty(empleados)}">
+                <thead>
+                    <tr><th>Nombre</th><th>Documento</th><th>Usuario</th><th>Rol</th></tr>
+                </thead>
+                <tbody>
+                    <tr th:each="e : ${empleados}">
+                        <td th:text="${e.nombre}"></td>
+                        <td th:text="${e.documento}"></td>
+                        <td th:text="${e.nombreUsuario}"></td>
+                        <td>
+                            <span class="etiqueta-estado"
+                                  th:classappend="${e.rol.name() == 'ADMINISTRADOR'} ? 'rol-admin' : 'sin-mensualidad'"
+                                  th:text="${e.rol.name() == 'ADMINISTRADOR'} ? 'Administrador' : 'Vigilante'"></span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Formulario: aparece al pulsar "+ Nuevo empleado" (o si hubo un error) -->
+        <section class="tarjeta-form" id="tarjeta-form" th:classappend="${!mostrarForm} ? 'oculto'">
+            <h2>Registrar empleado</h2>
+            <form th:action="@{/admin/empleados}" method="post">
+                <div class="rejilla-form">
+                    <div>
+                        <label for="nombre">Nombre completo *</label>
+                        <input type="text" id="nombre" name="nombre" class="campo-form"
+                               maxlength="100" required th:value="${nombre}">
+                    </div>
+                    <div>
+                        <label for="documento">Documento *</label>
+                        <input type="text" id="documento" name="documento" class="campo-form"
+                               maxlength="20" required th:value="${documento}">
+                    </div>
+                    <div>
+                        <label for="usuario">Usuario *</label>
+                        <input type="text" id="usuario" name="usuario" class="campo-form"
+                               maxlength="50" required autocomplete="off" th:value="${usuario}">
+                    </div>
+                    <div>
+                        <label for="rol">Rol *</label>
+                        <select id="rol" name="rol" class="campo-form" required>
+                            <option value="" th:selected="${rolSel == ''}">Selecciona un rol</option>
+                            <option th:each="r : ${roles}" th:value="${r.name()}"
+                                    th:text="${r.name() == 'ADMINISTRADOR'} ? 'Administrador' : 'Vigilante'"
+                                    th:selected="${r.name() == rolSel}"></option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="contrasena">Contraseña *</label>
+                        <input type="password" id="contrasena" name="contrasena" class="campo-form"
+                               required autocomplete="new-password">
+                    </div>
+                </div>
+                <div class="botones-form" style="margin-top: 18px;">
+                    <button type="submit" class="boton">Guardar empleado</button>
+                    <button type="button" class="boton-sec" id="cancelar-form">Cancelar</button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+</div>
+
+<script>
+    const tarjeta = document.getElementById('tarjeta-form');
+    document.getElementById('abrir-form').addEventListener('click', () => {
+        tarjeta.classList.remove('oculto');
+        document.getElementById('nombre').focus();
+    });
+    document.getElementById('cancelar-form').addEventListener('click', () => {
+        tarjeta.classList.add('oculto');
+    });
+</script>
+</body>
+</html>

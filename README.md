@@ -1,6 +1,6 @@
 # Autos Colombia - Sistema de gestión de parqueadero
 
-Aplicación web para gestionar la entrada y salida de vehículos del parqueadero "Autos Colombia", que presta el servicio por mensualidad. Corresponde a la **Iteración 1** de la Evidencia de aprendizaje 1 (Diseño de Sistema de información).
+Aplicación web para gestionar el parqueadero "Autos Colombia", que presta el servicio por mensualidad. Incluye la **Iteración 1** (entrada y salida de vehículos, Evidencia de aprendizaje 1) y la **Iteración 2** (gestión de usuarios y de celdas, Evidencia de aprendizaje 2) del diseño de un Sistema de información.
 
 - **Institución:** Institución Universitaria Digital de Antioquia
 - **Programa:** Ingeniería de Software
@@ -16,6 +16,7 @@ Aplicación web para gestionar la entrada y salida de vehículos del parqueadero
 - Maven (incluido mediante `mvnw`, no hay que instalarlo)
 
 ## Funcionalidades
+### Iteración 1: entrada y salida de vehículos
 
 | Historia | Funcionalidad |
 |----------|---------------|
@@ -32,6 +33,25 @@ Aplicación web para gestionar la entrada y salida de vehículos del parqueadero
 | HU-11 | Ver la disponibilidad de celdas |
 
 Formato de placa: carros con 3 letras y 3 números (`ABC123`) y motos con 3 letras, 2 números y 1 letra (`ABC12D`).
+
+### Iteración 2: gestión de usuarios y de celdas
+
+Todas las historias de esta iteración las ejecuta el administrador.
+
+| Historia | Casos de uso | Funcionalidad |
+|----------|--------------|---------------|
+| HU-12 | CU-12 | Registrar un cliente (el documento no puede repetirse) |
+| HU-13 | CU-13 | Registrar uno o más vehículos de un cliente (el tipo debe coincidir con el formato de la placa) |
+| HU-14 | CU-14 | Registrar la mensualidad de un cliente (solo una vigente a la vez) |
+| HU-15 | CU-15 | Renovar la mensualidad cuando está vencida o le faltan 5 días o menos, conservando el historial |
+| HU-16 | CU-16 | Consultar y buscar clientes por nombre, documento o placa, con el estado de su mensualidad |
+| HU-17 | CU-17 | Editar los datos del cliente y de sus vehículos (la placa solo se cambia si no tiene movimientos) |
+| HU-18 | CU-18 | Activar o desactivar un cliente (un cliente inactivo no ingresa, pero su vehículo ya dentro puede salir) |
+| HU-19 | CU-19 | Registrar empleados con su rol y contraseña cifrada |
+| HU-20 | CU-20 | Registrar celdas |
+| HU-21 | CU-21 | Editar una celda que no esté ocupada |
+| HU-22 | CU-22 | Poner una celda en mantenimiento o habilitarla |
+| HU-23 | CU-23 | Listar las celdas filtrando por tipo y estado |
 
 ## Requisitos previos
 
@@ -112,6 +132,11 @@ Al arrancar con el perfil `local`, el sistema crea datos de prueba si no existen
 | Celdas | `/consultas/celdas` | Vigilante y administrador |
 | Historial | `/admin/historial` | Solo administrador |
 | Consulta de novedades | `/admin/novedades` | Solo administrador |
+| Clientes | `/admin/clientes` | Solo administrador |
+| Registrar y editar cliente | `/admin/clientes/nuevo` y `/admin/clientes/{id}/editar` | Solo administrador |
+| Mensualidad del cliente | `/admin/clientes/{id}/mensualidad` | Solo administrador |
+| Empleados | `/admin/empleados` | Solo administrador |
+| Gestión de celdas | `/admin/celdas` | Solo administrador |
 
 ## Arquitectura
 
@@ -123,16 +148,20 @@ src/main/java/com/autoscolombia/parqueadero
 │                 Mensualidad, Celda, Movimiento, Novedad, Rol, TipoVehiculo,
 │                 EstadoCelda, TipoNovedad)
 ├── repositorio   Único acceso a la base de datos (Spring Data JPA)
-├── servicio      Reglas de negocio (MovimientoService, UsuarioService, CeldaService,
-│                 NovedadService, ValidacionPlacaService, AuthService,
-│                 DetalleEmpleadoService, DatosIniciales)
+├── servicio      Reglas de negocio. Iteración 1: MovimientoService, UsuarioService,
+│                 CeldaService, NovedadService, ValidacionPlacaService, AuthService,
+│                 DetalleEmpleadoService, DatosIniciales. Iteración 2: ClienteService,
+│                 MensualidadService, EmpleadoService, GestionCeldaService
 ├── controlador   Reciben las solicitudes de las pantallas
 ├── seguridad     Cifrado de contraseñas y configuración de roles
 └── excepcion     Reglas de negocio incumplidas (placa inválida, mensualidad vencida,
-                  ingreso activo, sin celda disponible)
+                  ingreso activo, sin celda disponible, cliente inactivo,
+                  datos inválidos)
 ```
 
 Las pantallas están en `src/main/resources/templates` (Thymeleaf) y los estilos en `src/main/resources/static/css`.
+
+La Iteración 2 se construyó sobre la misma estructura por capas, sin cambiar la de la Iteración 1. Los cambios en código existente fueron mínimos: `UsuarioService` y `MovimientoController` ahora rechazan el ingreso de un cliente desactivado, se agregaron consultas a los repositorios y se añadieron las opciones de administración al menú.
 
 **Autenticación:** el inicio de sesión lo ejecuta Spring Security. Consulta al empleado mediante `DetalleEmpleadoService`, compara la contraseña cifrada con BCrypt y aplica los permisos por rol.
 
@@ -140,4 +169,6 @@ Las pantallas están en `src/main/resources/templates` (Thymeleaf) y los estilos
 
 ## Documentación del diseño
 
-El diseño completo (requerimientos, historias de usuario, arquitectura, mockups, modelo de datos, casos de uso, diagrama de clases y diagrama de paquetes) está en el documento de la Evidencia de aprendizaje 1.
+El diseño completo (requerimientos, historias de usuario, arquitectura, mockups, modelo de datos, casos de uso, diagrama de clases y diagrama de paquetes) está en los documentos de las Evidencias de aprendizaje 1 y 2.
+
+La Iteración 2 no necesita tablas nuevas: usa las mismas del script.

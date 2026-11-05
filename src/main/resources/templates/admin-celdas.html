@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gestión de celdas - Autos Colombia</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+<div class="layout">
+
+    <div th:replace="~{fragmentos :: menu('gestion-celdas')}"></div>
+
+    <main class="contenido">
+        <h1>Gestión de celdas</h1>
+        <p class="descripcion">Administra las celdas del parqueadero</p>
+
+        <div th:if="${exito}" class="mensaje exito" th:text="${exito}"></div>
+        <div th:if="${error}" class="mensaje error" th:text="${error}"></div>
+
+        <!-- Filtros (CU-23) -->
+        <form th:action="@{/admin/celdas}" method="get" class="filtros-historial filtros-celdas">
+            <div>
+                <label for="filtro-tipo">Tipo</label>
+                <select id="filtro-tipo" name="tipo" class="campo-form">
+                    <option value="" th:selected="${tipoFiltro == ''}">Todos</option>
+                    <option th:each="t : ${tipos}" th:value="${t.name()}"
+                            th:text="${t.name() == 'CARRO'} ? 'Carro' : 'Moto'"
+                            th:selected="${t.name() == tipoFiltro}"></option>
+                </select>
+            </div>
+            <div>
+                <label for="filtro-estado">Estado</label>
+                <select id="filtro-estado" name="estado" class="campo-form">
+                    <option value="" th:selected="${estadoFiltro == ''}">Todos</option>
+                    <option th:each="e : ${estados}" th:value="${e.name()}"
+                            th:text="${e.name() == 'LIBRE'} ? 'Libre' : (${e.name() == 'OCUPADA'} ? 'Ocupada' : 'Mantenimiento')"
+                            th:selected="${e.name() == estadoFiltro}"></option>
+                </select>
+            </div>
+            <button type="submit" class="boton-buscar">Filtrar</button>
+            <a class="boton-limpiar" th:href="@{/admin/celdas}">Limpiar</a>
+        </form>
+
+        <!-- Listado -->
+        <section class="tarjeta-form">
+            <div class="encabezado-tarjeta">
+                <h2>Celdas</h2>
+                <button type="button" class="boton-nuevo" id="abrir-form">+ Nueva celda</button>
+            </div>
+
+            <p th:if="${#lists.isEmpty(celdas)}">No hay celdas para los filtros aplicados.</p>
+            <table class="tabla" th:unless="${#lists.isEmpty(celdas)}">
+                <thead>
+                    <tr><th>Código</th><th>Tipo</th><th>Estado</th><th>Acciones</th></tr>
+                </thead>
+                <tbody>
+                    <tr th:each="c : ${celdas}">
+                        <td th:text="${c.codigo}"></td>
+                        <td th:text="${c.tipo.name() == 'CARRO'} ? 'Carro' : 'Moto'"></td>
+                        <td>
+                            <span class="etiqueta-estado"
+                                  th:classappend="${c.estado.name() == 'LIBRE'} ? 'est-libre' : (${c.estado.name() == 'OCUPADA'} ? 'est-ocupada' : 'est-mantenimiento')"
+                                  th:text="${c.estado.name() == 'LIBRE'} ? 'Libre' : (${c.estado.name() == 'OCUPADA'} ? 'Ocupada' : 'Mantenimiento')"></span>
+                        </td>
+                        <td>
+                            <!-- Una celda ocupada no se puede modificar -->
+                            <span th:if="${c.estado.name() == 'OCUPADA'}">—</span>
+                            <div class="acciones-fila" th:unless="${c.estado.name() == 'OCUPADA'}">
+                                <a th:href="@{/admin/celdas/{id}/editar(id=${c.idCelda})}">Editar</a>
+                                <form th:if="${c.estado.name() == 'LIBRE'}" method="post"
+                                      th:action="@{/admin/celdas/{id}/mantenimiento(id=${c.idCelda})}">
+                                    <button type="submit" class="enlace-boton peligro">Mantenimiento</button>
+                                </form>
+                                <form th:if="${c.estado.name() == 'MANTENIMIENTO'}" method="post"
+                                      th:action="@{/admin/celdas/{id}/habilitar(id=${c.idCelda})}">
+                                    <button type="submit" class="enlace-boton">Habilitar</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Formulario de registrar / editar -->
+        <section class="tarjeta-form" id="tarjeta-form" th:classappend="${!mostrarForm} ? 'oculto'">
+            <h2 th:text="${idEdicion == null} ? 'Registrar celda' : 'Editar celda'">Registrar celda</h2>
+            <form method="post"
+                  th:action="${idEdicion == null} ? @{/admin/celdas} : @{/admin/celdas/{id}/editar(id=${idEdicion})}">
+                <div class="rejilla-form">
+                    <div>
+                        <label for="codigo">Código de la celda *</label>
+                        <input type="text" id="codigo" name="codigo" class="campo-form"
+                               maxlength="10" required autocomplete="off" placeholder="C-04"
+                               style="text-transform: uppercase" th:value="${codigoForm}">
+                    </div>
+                    <div>
+                        <label for="tipo">Tipo *</label>
+                        <select id="tipo" name="tipo" class="campo-form" required>
+                            <option value="" th:selected="${tipoForm == ''}">Selecciona un tipo</option>
+                            <option value="CARRO" th:selected="${tipoForm == 'CARRO'}">Carro</option>
+                            <option value="MOTO" th:selected="${tipoForm == 'MOTO'}">Moto</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="botones-form" style="margin-top: 18px;">
+                    <button type="submit" class="boton">Guardar celda</button>
+                    <a class="boton-sec" th:href="@{/admin/celdas}">Cancelar</a>
+                </div>
+            </form>
+        </section>
+    </main>
+
+</div>
+
+<script>
+    document.getElementById('abrir-form').addEventListener('click', () => {
+        document.getElementById('tarjeta-form').classList.remove('oculto');
+        document.getElementById('codigo').focus();
+    });
+</script>
+</body>
+</html>

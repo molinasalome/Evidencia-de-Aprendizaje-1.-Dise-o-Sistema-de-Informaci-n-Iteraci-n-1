@@ -331,3 +331,114 @@ textarea.campo-form { resize: vertical; }
     background: #fdf0c8;
     color: #b7791f;
 }
+
+
+/* Gestión de clientes */
+.barra-clientes { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 20px; }
+.barra-clientes form { display: flex; gap: 12px; align-items: center; margin: 0; }
+.barra-clientes .campo-form { width: 300px; }
+.boton-nuevo {
+    margin-left: auto;
+    padding: 10px 22px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #fff;
+    background: #2f6fde;
+    border-radius: 6px;
+    text-decoration: none;
+}
+.etiqueta-estado.vigente, .etiqueta-estado.activo { background: #dcf3e5; color: #25774f; }
+.etiqueta-estado.vencida { background: #fdecea; color: #b3261e; }
+.etiqueta-estado.sin-mensualidad, .etiqueta-estado.inactivo { background: #e5e8ec; color: #555; }
+.acciones-fila { display: flex; gap: 14px; align-items: center; }
+.acciones-fila form { margin: 0; }
+.acciones-fila a, .enlace-boton {
+    font-size: 13px;
+    font-weight: bold;
+    color: #2f6fde;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    text-decoration: none;
+}
+.enlace-boton.peligro { color: #b3261e; }
+
+
+/* Formulario de cliente */
+.tarjeta-form {
+    background: #fff;
+    border-radius: 10px;
+    padding: 22px 24px;
+    max-width: 820px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+.tarjeta-form h2 { margin: 0 0 16px; font-size: 16px; }
+.rejilla-form { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 18px; }
+.rejilla-form label, .fila-vehiculo label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 6px; }
+.rejilla-form .campo-form, .fila-vehiculo .campo-form { width: 100%; box-sizing: border-box; }
+.fila-vehiculo {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1.2fr 1.2fr 32px;
+    gap: 12px;
+    align-items: end;
+    margin-bottom: 14px;
+}
+.campo-bloqueado { background: #eef0f3; color: #666; }
+.quitar-vehiculo {
+    height: 38px;
+    font-size: 18px;
+    color: #b3261e;
+    background: none;
+    border: 1px solid #e0a8a2;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.agregar-vehiculo {
+    font-size: 14px;
+    font-weight: bold;
+    color: #2f6fde;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+.botones-form { display: flex; gap: 14px; max-width: 820px; }
+.botones-form .boton { width: auto; margin-top: 0; padding: 11px 26px; }
+.botones-form .boton-sec { flex: 0 0 auto; padding: 11px 26px; }
+.nota-form { font-size: 12px; color: #666; margin: 4px 0 14px; }
+
+
+/* Pantalla de mensualidad */
+.datos-cliente { display: flex; flex-wrap: wrap; gap: 28px; align-items: center; }
+.datos-cliente div span { display: block; font-size: 12px; color: #666; }
+.datos-cliente div strong { font-size: 15px; }
+.datos-cliente .etiqueta-estado { margin-left: auto; }
+.tarjeta-form .tabla { width: 100%; }
+
+
+.enlace-volver {
+    display: inline-block;
+    margin-bottom: 14px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #2f6fde;
+    text-decoration: none;
+}
+.enlace-volver:hover { text-decoration: underline; }
+
+
+/* Empleados */
+.oculto { display: none; }
+.etiqueta-estado.rol-admin { background: #e3ecfb; color: #2f6fde; }
+.encabezado-tarjeta { display: flex; align-items: center; margin-bottom: 14px; }
+.encabezado-tarjeta h2 { margin: 0; }
+.encabezado-tarjeta .boton-nuevo { margin-left: auto; border: none; cursor: pointer; }
+
+
+/* Gestión de celdas */
+.etiqueta-estado.est-libre { background: #dcf3e5; color: #25774f; }
+.etiqueta-estado.est-ocupada { background: #fdecea; color: #b3261e; }
+.etiqueta-estado.est-mantenimiento { background: #fdf0c8; color: #b7791f; }
+.filtros-celdas { max-width: 820px; }
